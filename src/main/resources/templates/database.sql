@@ -26,6 +26,9 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(45) DEFAULT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
    PRIMARY KEY (`id`)
 ) ;
 
@@ -51,16 +54,13 @@ CREATE TABLE `job` (
 
 
 -- Insert 10 example records into the user table
-INSERT INTO `user` (`name`) VALUES ('Alice Johnson');
-INSERT INTO `user` (`name`) VALUES ('Bob Smith');
-INSERT INTO `user` (`name`) VALUES ('Charlie Davis');
-INSERT INTO `user` (`name`) VALUES ('Diana Green');
-INSERT INTO `user` (`name`) VALUES ('Ethan Brown');
-INSERT INTO `user` (`name`) VALUES ('Fiona Lee');
-INSERT INTO `user` (`name`) VALUES ('George White');
-INSERT INTO `user` (`name`) VALUES ('Hannah Wilson');
-INSERT INTO `user` (`name`) VALUES ('Ian Clark');
-INSERT INTO `user` (`name`) VALUES ('Jasmine Adams');
+INSERT INTO user (name, email, password) 
+VALUES 
+('alice', 'alice@example.com', 'passwordAlice'),
+('bob', 'bob@example.com', 'passwordBob'),
+('charlie', 'charlie@example.com', 'passwordCharlie'),
+('david', 'david@example.com', 'passwordDavid'),
+('eve', 'eve@example.com', 'passwordEve');
 
 -- Insert 10 example records into the job table, associating with users
 INSERT INTO `job` (`title`, `user_id`) VALUES ('Software Engineer', 1);

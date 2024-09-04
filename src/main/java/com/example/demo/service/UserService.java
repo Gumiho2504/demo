@@ -28,6 +28,9 @@ public class UserService {
     @Autowired
     JobRepository jobRepository;
 
+    // @Autowired
+    // private PasswordEncoder passwordEncoder;
+
     public List<UserDto> getAllUser(){
         return userRepository.findAll().stream()
         .map(this::toUserDto).toList();
@@ -43,6 +46,9 @@ public class UserService {
     public User saveUser(UserDto userDto){
         User user = new User();
         user.setName(userDto.getName());
+        user.setPassword(userDto.getPassword());
+        user.setEmail(userDto.getEmail());
+        user.setCreatedAt(userDto.getCreatedAt());
         if(user.getSaveJobs() != null){
             List<Job> jobs = userDto.getSaveJob().stream().map(jobDto->{
               Job job = new Job();
@@ -123,7 +129,9 @@ public class UserService {
         UserDto userDto = new UserDto();
             userDto.setId(user.getId());
             userDto.setName(user.getName());
-            
+            userDto.setEmail(user.getEmail());
+            userDto.setPassword(user.getPassword());
+            userDto.createdAt(user.getCreatedAt());
             userDto.setSaveJob(user.getSaveJobs().stream()
             .map(job -> {
                 JobDto jobDto = new JobDto();
@@ -134,5 +142,27 @@ public class UserService {
             );
         
             return userDto;
+    }
+
+    public User registerUser(String name ,String email, String password){
+        User newUser = new User();
+        newUser.setName(name);
+        newUser.setPassword(password);
+        newUser.setEmail(email);
+        return userRepository.save(newUser);
+    }
+    @Transactional
+    public User loginUser(String email,String password){
+        User tempUser = userRepository.findUserByEmail(email);
+       
+        System.out.println(tempUser.getPassword() + tempUser.getName());
+        if(tempUser != null &&tempUser.getPassword().matches(password)){
+            System.out.println("fond!");
+            return tempUser;
+        }
+        System.out.println("not fond!");
+        System.out.println(tempUser.getPassword() + tempUser.getName());
+       return null;
+        
     }
 }

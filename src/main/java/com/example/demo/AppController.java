@@ -7,6 +7,7 @@ import com.example.demo.Dto.UserDto;
 import com.example.demo.service.JobService;
 import com.example.demo.service.UserService;
 
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,8 +59,14 @@ public class AppController {
 
    @PostMapping("/user/")
     public ResponseEntity<User> saveUser(@RequestBody UserDto userDto) {
-        User createdUser = userService.saveUser(userDto);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        try{
+            User createdUser = userService.saveUser(userDto);
+            return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        }catch(Exception e){
+            return new  ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+       
+        
     }
    
     @PostMapping("/user/{userId}/savejob={jobId}")
@@ -90,6 +97,7 @@ public class AppController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+
     @PutMapping("/user/{userId}")
     public ResponseEntity<User> updateUser(@PathVariable long userId, @RequestBody UserDto userDto){
         Optional<User> userOptional = userService.updateUser(userId, userDto);
@@ -99,6 +107,25 @@ public class AppController {
             return new ResponseEntity<>(HttpStatusCode.valueOf(404));
         }
 
+    }
+    @PostMapping("/user/register")
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        try {
+            User newUser = userService.registerUser(user.getName(), user.getEmail(), user.getPassword());
+            return ResponseEntity.ok(newUser);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("user name already use");
+        }
+    }
+
+    @PostMapping("/user/login")
+    public ResponseEntity<User> loginUser(@RequestBody User user) {
+        User loggedInUser = userService.loginUser(user.getEmail(), user.getPassword());
+        if (loggedInUser != null) {
+            return ResponseEntity.ok(loggedInUser);
+        } else {
+            return ResponseEntity.status(401).body(null);
+        }
     }
     
 }
