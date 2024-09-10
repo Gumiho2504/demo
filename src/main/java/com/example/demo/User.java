@@ -1,6 +1,6 @@
 package com.example.demo;
 
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,11 +10,17 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+
 import java.util.Objects;
+
+
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
@@ -26,6 +32,7 @@ public class User {
     private String name;
     private String email;
     private String password;
+    //private String about;
     private LocalDateTime createdAt;
 
 
@@ -33,7 +40,12 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL})
+    @JoinTable(
+        name = "savejob", // Join table name
+        joinColumns = @JoinColumn(name = "user_id"), // Column for Student
+        inverseJoinColumns = @JoinColumn(name = "job_id") // Column for Course
+    )
     @JsonManagedReference
     private List<Job> saveJobs;
 
@@ -42,12 +54,12 @@ public class User {
             saveJobs = new ArrayList<>();
         }
         saveJobs.add(job);
-        job.setUser(this);
+        //job.add(this);
     }
 
     public void removeJob(Job job) {
         this.saveJobs.remove(job);
-        job.setUser(null);
+        //job.setUser(null);
     }
 
 

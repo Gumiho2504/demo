@@ -57,7 +57,7 @@ public class AppController {
     return userService.getUserById(id);
    }
 
-   @PostMapping("/user/")
+   @PostMapping("/user/register")
     public ResponseEntity<User> saveUser(@RequestBody UserDto userDto) {
         try{
             User createdUser = userService.saveUser(userDto);
@@ -102,27 +102,27 @@ public class AppController {
     public ResponseEntity<User> updateUser(@PathVariable long userId, @RequestBody UserDto userDto){
         Optional<User> userOptional = userService.updateUser(userId, userDto);
         if(userOptional.isPresent()){
-            return new ResponseEntity<>(userOptional.get(),HttpStatus.OK);
+            return new ResponseEntity<>(userOptional.get(),HttpStatusCode.valueOf(200));
         }else{
             return new ResponseEntity<>(HttpStatusCode.valueOf(404));
         }
 
     }
-    @PostMapping("/user/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
-        try {
-            User newUser = userService.registerUser(user.getName(), user.getEmail(), user.getPassword());
-            return ResponseEntity.ok(newUser);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("user name already use");
-        }
-    }
+    // @PostMapping("/user/register")
+    // public ResponseEntity<?> registerUser(@RequestBody User user) {
+    //     try {
+    //         User newUser = userService.registerUser(user.getName(), user.getEmail(), user.getPassword());
+    //         return ResponseEntity.ok(newUser);
+    //     } catch (Exception e) {
+    //         return ResponseEntity.badRequest().body("user name already use");
+    //     }
+    // }
 
     @PostMapping("/user/login")
-    public ResponseEntity<User> loginUser(@RequestBody User user) {
-        User loggedInUser = userService.loginUser(user.getEmail(), user.getPassword());
+    public ResponseEntity<UserDto> loginUser(@RequestBody UserDto userDto) {
+        UserDto loggedInUser = userService.loginUser(userDto.getEmail(), userDto.getPassword());
         if (loggedInUser != null) {
-            return ResponseEntity.ok(loggedInUser);
+            return new ResponseEntity<>(loggedInUser,HttpStatusCode.valueOf(200));
         } else {
             return ResponseEntity.status(401).body(null);
         }

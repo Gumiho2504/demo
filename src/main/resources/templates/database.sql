@@ -1,68 +1,86 @@
-USE jobapplication;
+use MOVIES_INFO;
 
--- Drop the savejob table if it exists
-DROP TABLE IF EXISTS `savejob`;
-DROP TABLE IF EXISTS `job`;
-DROP TABLE IF EXISTS `user`;
+-- Create the tables
 
--- Create the user table first
-CREATE TABLE `user` (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE genres (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100)
 );
 
--- Create the job table
-CREATE TABLE `job` (
-    `id` INT NOT NULL AUTO_INCREMENT,
-    `title` VARCHAR(128) DEFAULT NULL,
-    `user_id` BIGINT DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `TITLE_UNIQUE` (`title`),
-    CONSTRAINT `FK_INSTRUCTOR` 
-    FOREIGN KEY (`user_id`) 
-    REFERENCES `user` (`id`) 
-    ON DELETE NO ACTION 
-    ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE actors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100)
+);
 
--- Create the savejob table after user and job tables
-CREATE TABLE `savejob` (
-    `user_id` BIGINT NOT NULL,
-    `job_id` INT NOT NULL,
-    `saved_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`user_id`, `job_id`),
-    CONSTRAINT `FK_SAVEJOB_USER`
-        FOREIGN KEY (`user_id`)
-        REFERENCES `user` (`id`)
-        ON DELETE CASCADE
-        ON UPDATE NO ACTION,
-    CONSTRAINT `FK_SAVEJOB_JOB`
-        FOREIGN KEY (`job_id`)
-        REFERENCES `job` (`id`)
-        ON DELETE CASCADE
-        ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE directors (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100)
+);
 
--- Insert 5 example records into the user table
-INSERT INTO `user` (name, email, password) 
-VALUES 
-('alice', 'alice@example.com', 'passwordAlice'),
-('bob', 'bob@example.com', 'passwordBob'),
-('charlie', 'charlie@example.com', 'passwordCharlie'),
-('david', 'david@example.com', 'passwordDavid'),
-('eve', 'eve@example.com', 'passwordEve');
+CREATE TABLE movies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255),
+    description TEXT,
+    release_date DATE,
+    rating DECIMAL(3, 1),
+    duration INT,
+    director_id INT,
+    FOREIGN KEY (director_id) REFERENCES Directors(id)
+);
 
--- Insert 10 example records into the job table, associating with users
-INSERT INTO `job` (`title`, `user_id`) VALUES ('Software Engineer', null);
-INSERT INTO `job` (`title`, `user_id`) VALUES ('Data Analyst', null);
-INSERT INTO `job` (`title`, `user_id`) VALUES ('Project Manager', null);
-INSERT INTO `job` (`title`, `user_id`) VALUES ('Product Designer', null);
-INSERT INTO `job` (`title`, `user_id`) VALUES ('Marketing Specialist', null);
-INSERT INTO `job` (`title`, `user_id`) VALUES ('Sales Representative', null);
-INSERT INTO `job` (`title`, `user_id`) VALUES ('UX Researcher', null);
-INSERT INTO `job` (`title`, `user_id`) VALUES ('System Administrator',null);
-INSERT INTO `job` (`title`, `user_id`) VALUES ('Business Analyst', null);
-INSERT INTO `job` (`title`, `user_id`) VALUES ('Customer Support', null);
+CREATE TABLE movie_genres (
+    movie_id INT,
+    genre_id INT,
+    PRIMARY KEY (movie_id, genre_id),
+    FOREIGN KEY (movie_id) REFERENCES Movies(id),
+    FOREIGN KEY (genre_id) REFERENCES Genres(id)
+);
+
+CREATE TABLE movie_actors (
+    movie_id INT,
+    actor_id INT,
+    role VARCHAR(100),
+    PRIMARY KEY (movie_id, actor_id),
+    FOREIGN KEY (movie_id) REFERENCES Movies(id),
+    FOREIGN KEY (actor_id) REFERENCES Actors(id)
+);
+
+-- Insert data into Genres table
+INSERT INTO genres (name) VALUES
+('Action'),
+('Adventure'),
+('Sci-Fi'),
+('Crime'),
+('Drama');
+
+-- Insert data into Actors table
+INSERT INTO actors (name) VALUES
+('Leonardo DiCaprio'),
+('Joseph Gordon-Levitt'),
+('Christian Bale'),
+('Heath Ledger');
+
+-- Insert data into Directors table
+INSERT INTO directors (name) VALUES
+('Christopher Nolan');
+
+-- Insert data into Movies table
+INSERT INTO movies (title, description, release_date, rating, duration, director_id) VALUES
+('Inception', 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.', '2010-07-16', 8.8, 148, 1),
+('The Dark Knight', 'When the menace known as the Joker emerges from his mysterious past, he wreaks havoc and chaos on the people of Gotham.', '2008-07-18', 9.0, 152, 1);
+
+-- Insert data into MovieGenres table
+INSERT INTO movie_genres (movie_id, genre_id) VALUES
+(1, 1),
+(1, 2),
+(1, 3),
+(2, 1),
+(2, 4),
+(2, 5);
+
+-- Insert data into MovieActors table
+INSERT INTO movie_actors (movie_id, actor_id, role) VALUES
+(1, 1, 'Cobb'),
+(1, 2, 'Arthur'),
+(2, 3, 'Bruce Wayne'),
+(2, 4, 'Joker');

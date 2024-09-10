@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,8 +39,7 @@ public class UserService {
 
     public Optional<UserDto> getUserById(long id){
         Optional<User> user = userRepository.findById(id);
-        return user.map(this::toUserDto);
-       
+        return user.map(this::toUserDto);   
     }
 
     @Transactional
@@ -50,12 +50,14 @@ public class UserService {
         user.setEmail(userDto.getEmail());
         user.setCreatedAt(userDto.getCreatedAt());
         if(user.getSaveJobs() != null){
-            List<Job> jobs = userDto.getSaveJob().stream().map(jobDto->{
+            List<Job> jobs = userDto.getSaveJobs().stream().map(jobDto->{
               Job job = new Job();
               job.setTitle(jobDto.getTitle());
               return job;
             }).collect(Collectors.toList());
             user.setSaveJobs(jobs);
+        }else{
+            user.setSaveJobs(new ArrayList<>());
         }
         return userRepository.save(user);
     }
@@ -107,6 +109,7 @@ public class UserService {
         if(userOptional.isPresent()){
             User user = userOptional.get();
             user.setName(userDto.getName());
+
             // if(userDto.getSaveJob() != null){
             //     List<Job> jobs = userDto.getSaveJob().stream()
             //     .map(jobDto -> {
@@ -132,7 +135,10 @@ public class UserService {
             userDto.setEmail(user.getEmail());
             userDto.setPassword(user.getPassword());
             userDto.createdAt(user.getCreatedAt());
-            userDto.setSaveJob(user.getSaveJobs().stream()
+            if(user.getSaveJobs() == null){
+                user.setSaveJobs(new ArrayList<>());
+            }else{
+            userDto.setSaveJobs(user.getSaveJobs().stream()
             .map(job -> {
                 JobDto jobDto = new JobDto();
                 jobDto.setId(job.getId());
@@ -140,29 +146,34 @@ public class UserService {
                 return jobDto;
             }).collect(Collectors.toList())
             );
-        
+            }
             return userDto;
     }
-
+    @Transactional
     public User registerUser(String name ,String email, String password){
         User newUser = new User();
         newUser.setName(name);
         newUser.setPassword(password);
         newUser.setEmail(email);
+        newUser.setSaveJobs(null);
         return userRepository.save(newUser);
     }
+
     @Transactional
-    public User loginUser(String email,String password){
+    public UserDto loginUser(String email,String password){
         User tempUser = userRepository.findUserByEmail(email);
-       
+        UserDto userDto = new UserDto();
+        userDto = toUserDto(tempUser);
         System.out.println(tempUser.getPassword() + tempUser.getName());
+
         if(tempUser != null &&tempUser.getPassword().matches(password)){
             System.out.println("fond!");
-            return tempUser;
+            return userDto;
         }
+
         System.out.println("not fond!");
         System.out.println(tempUser.getPassword() + tempUser.getName());
-       return null;
+        return null;
         
     }
 }

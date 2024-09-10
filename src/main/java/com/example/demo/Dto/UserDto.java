@@ -12,7 +12,7 @@ public class UserDto {
     private String email;
     private String password;
     private LocalDateTime createdAt;
-    private List<JobDto> saveJob;
+    private List<JobDto> saveJobs;
 
 
     // public UserDto() {
@@ -24,7 +24,7 @@ public class UserDto {
         this.email = email;
         this.password = password;
         this.createdAt = createdAt;
-        this.saveJob = saveJob;
+        this.saveJobs = saveJob;
     }
 
     public UserDto() {
@@ -80,7 +80,7 @@ public class UserDto {
     }
 
     public UserDto saveJob(List<JobDto> saveJob) {
-        setSaveJob(saveJob);
+        setSaveJobs(saveJob);
         return this;
     }
 
@@ -92,25 +92,15 @@ public class UserDto {
             return false;
         }
         UserDto userDto = (UserDto) o;
-        return id == userDto.id && Objects.equals(name, userDto.name) && Objects.equals(email, userDto.email) && Objects.equals(password, userDto.password) && Objects.equals(createdAt, userDto.createdAt) && Objects.equals(saveJob, userDto.saveJob);
+        return id == userDto.id && Objects.equals(name, userDto.name) && Objects.equals(email, userDto.email) && Objects.equals(password, userDto.password) && Objects.equals(createdAt, userDto.createdAt) && Objects.equals(saveJobs, userDto.saveJobs);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, email, password, createdAt, saveJob);
+        return Objects.hash(id, name, email, password, createdAt, saveJobs);
     }
 
-    @Override
-    public String toString() {
-        return "{" +
-            " id='" + getId() + "'" +
-            ", name='" + getName() + "'" +
-            ", email='" + getEmail() + "'" +
-            ", password='" + getPassword() + "'" +
-            ", createdAt='" + getCreatedAt() + "'" +
-            ", saveJob='" + getSaveJob() + "'" +
-            "}";
-    }
+ 
 
     public long getId() {
         return this.id;
@@ -129,14 +119,26 @@ public class UserDto {
     }
 
 
-    public List<JobDto> getSaveJob() {
-        return this.saveJob;
+    public List<JobDto> getSaveJobs() {
+        return this.saveJobs;
     }
 
-    public void setSaveJob(List<JobDto> saveJob) {
-        this.saveJob = saveJob;
+    public void setSaveJobs(List<JobDto> saveJob) {
+        this.saveJobs = saveJob;
     }
     
+
+    @Override
+    public String toString() {
+        return "{" +
+            " id='" + getId() + "'" +
+            ", name='" + getName() + "'" +
+            ", email='" + getEmail() + "'" +
+            ", password='" + getPassword() + "'" +
+            ", createdAt='" + getCreatedAt() + "'" +
+            ", saveJobs='" + getSaveJobs() + "'" +
+            "}";
+    }
 
     
 }
