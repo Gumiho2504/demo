@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-
+import com.example.demo.model.Profile;
 
 public class UserDto {
     private long id;
@@ -13,23 +13,38 @@ public class UserDto {
     private String password;
     private LocalDateTime createdAt;
     private List<JobDto> saveJobs;
+    private ProfileDto profile;
 
+    public UserDto() {
+    }
 
-    // public UserDto() {
-    // }
-
-    public UserDto(long id, String name, String email, String password, LocalDateTime createdAt, List<JobDto> saveJob) {
+    public UserDto(long id, String name, String email, String password, LocalDateTime createdAt, List<JobDto> saveJobs,
+            ProfileDto profile) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.createdAt = createdAt;
-        this.saveJobs = saveJob;
+        this.saveJobs = saveJobs;
+        this.profile = profile;
     }
 
-    public UserDto() {
-        this.createdAt = LocalDateTime.now();
+    public long getId() {
+        return this.id;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getEmail() {
         return this.email;
     }
@@ -52,6 +67,22 @@ public class UserDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<JobDto> getSaveJobs() {
+        return this.saveJobs;
+    }
+
+    public void setSaveJobs(List<JobDto> saveJobs) {
+        this.saveJobs = saveJobs;
+    }
+
+    public ProfileDto getProfile() {
+        return this.profile;
+    }
+
+    public void setProfile(ProfileDto profile) {
+        this.profile = profile;
     }
 
     public UserDto id(long id) {
@@ -79,8 +110,13 @@ public class UserDto {
         return this;
     }
 
-    public UserDto saveJob(List<JobDto> saveJob) {
-        setSaveJobs(saveJob);
+    public UserDto saveJobs(List<JobDto> saveJobs) {
+        setSaveJobs(saveJobs);
+        return this;
+    }
+
+    public UserDto profile(ProfileDto profile) {
+        setProfile(profile);
         return this;
     }
 
@@ -92,53 +128,27 @@ public class UserDto {
             return false;
         }
         UserDto userDto = (UserDto) o;
-        return id == userDto.id && Objects.equals(name, userDto.name) && Objects.equals(email, userDto.email) && Objects.equals(password, userDto.password) && Objects.equals(createdAt, userDto.createdAt) && Objects.equals(saveJobs, userDto.saveJobs);
+        return id == userDto.id && Objects.equals(name, userDto.name) && Objects.equals(email, userDto.email)
+                && Objects.equals(password, userDto.password) && Objects.equals(createdAt, userDto.createdAt)
+                && Objects.equals(saveJobs, userDto.saveJobs) && Objects.equals(profile, userDto.profile);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, email, password, createdAt, saveJobs);
+        return Objects.hash(id, name, email, password, createdAt, saveJobs, profile);
     }
-
- 
-
-    public long getId() {
-        return this.id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-
-    public List<JobDto> getSaveJobs() {
-        return this.saveJobs;
-    }
-
-    public void setSaveJobs(List<JobDto> saveJob) {
-        this.saveJobs = saveJob;
-    }
-    
 
     @Override
     public String toString() {
         return "{" +
-            " id='" + getId() + "'" +
-            ", name='" + getName() + "'" +
-            ", email='" + getEmail() + "'" +
-            ", password='" + getPassword() + "'" +
-            ", createdAt='" + getCreatedAt() + "'" +
-            ", saveJobs='" + getSaveJobs() + "'" +
-            "}";
+                " id='" + getId() + "'" +
+                ", name='" + getName() + "'" +
+                ", email='" + getEmail() + "'" +
+                ", password='" + getPassword() + "'" +
+                ", createdAt='" + getCreatedAt() + "'" +
+                ", saveJobs='" + getSaveJobs() + "'" +
+                ", profile='" + getProfile() + "'" +
+                "}";
     }
 
-    
 }

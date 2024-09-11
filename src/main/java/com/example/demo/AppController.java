@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Dto.JobDto;
 import com.example.demo.Dto.UserDto;
+import com.example.demo.model.User;
 import com.example.demo.service.JobService;
 import com.example.demo.service.UserService;
 
@@ -24,12 +25,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
-
 @RestController
 @RequestMapping("/api")
 public class AppController {
-    
+
     @Autowired
     JobService jobService;
 
@@ -38,37 +37,36 @@ public class AppController {
 
     // @GetMapping("/")
     // public String sayHello(){
-    //     return "Hello";
+    // return "Hello";
     // }
 
     @GetMapping("/")
-    public List<JobDto> getAllJob(){
-        
+    public List<JobDto> getAllJob() {
+
         return jobService.getAllJobs();
     }
-    
+
     @GetMapping("/user/")
-    public List<UserDto> getAllUser(){
+    public List<UserDto> getAllUser() {
         return userService.getAllUser();
     }
 
     @GetMapping("/user/{id}")
-   public Optional<UserDto> getUserById(@PathVariable long id){
-    return userService.getUserById(id);
-   }
+    public Optional<UserDto> getUserById(@PathVariable long id) {
+        return userService.getUserById(id);
+    }
 
-   @PostMapping("/user/register")
+    @PostMapping("/user/register")
     public ResponseEntity<User> saveUser(@RequestBody UserDto userDto) {
-        try{
+        try {
             User createdUser = userService.saveUser(userDto);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
-        }catch(Exception e){
-            return new  ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
         }
-       
-        
+
     }
-   
+
     @PostMapping("/user/{userId}/savejob={jobId}")
     public ResponseEntity<User> addJobToUser(@PathVariable Long userId, @PathVariable Long jobId) {
         Optional<User> userOptional = userService.addSaveJobsToUser(userId, jobId);
@@ -81,51 +79,50 @@ public class AppController {
     }
 
     @DeleteMapping("/user/{userId}/removejob={jobId}")
-    public ResponseEntity<User> removeJobsFromUser(@PathVariable Long userId, @PathVariable Long jobId){
+    public ResponseEntity<User> removeJobsFromUser(@PathVariable Long userId, @PathVariable Long jobId) {
         Optional<User> userOptional = userService.removeSaveJobsFromUser(userId, jobId);
-        if(userOptional.isPresent()){
-            return new ResponseEntity<>(userOptional.get(),HttpStatus.OK);
-        }else{
+        if (userOptional.isPresent()) {
+            return new ResponseEntity<>(userOptional.get(), HttpStatus.OK);
+        } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    
 
     @DeleteMapping("/user/{userId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable long userId){
+    public ResponseEntity<Void> deleteUser(@PathVariable long userId) {
         userService.deleteUser(userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
     @PutMapping("/user/{userId}")
-    public ResponseEntity<User> updateUser(@PathVariable long userId, @RequestBody UserDto userDto){
+    public ResponseEntity<User> updateUser(@PathVariable long userId, @RequestBody UserDto userDto) {
         Optional<User> userOptional = userService.updateUser(userId, userDto);
-        if(userOptional.isPresent()){
-            return new ResponseEntity<>(userOptional.get(),HttpStatusCode.valueOf(200));
-        }else{
+        if (userOptional.isPresent()) {
+            return new ResponseEntity<>(userOptional.get(), HttpStatusCode.valueOf(200));
+        } else {
             return new ResponseEntity<>(HttpStatusCode.valueOf(404));
         }
 
     }
     // @PostMapping("/user/register")
     // public ResponseEntity<?> registerUser(@RequestBody User user) {
-    //     try {
-    //         User newUser = userService.registerUser(user.getName(), user.getEmail(), user.getPassword());
-    //         return ResponseEntity.ok(newUser);
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body("user name already use");
-    //     }
+    // try {
+    // User newUser = userService.registerUser(user.getName(), user.getEmail(),
+    // user.getPassword());
+    // return ResponseEntity.ok(newUser);
+    // } catch (Exception e) {
+    // return ResponseEntity.badRequest().body("user name already use");
+    // }
     // }
 
     @PostMapping("/user/login")
     public ResponseEntity<UserDto> loginUser(@RequestBody UserDto userDto) {
         UserDto loggedInUser = userService.loginUser(userDto.getEmail(), userDto.getPassword());
         if (loggedInUser != null) {
-            return new ResponseEntity<>(loggedInUser,HttpStatusCode.valueOf(200));
+            return new ResponseEntity<>(loggedInUser, HttpStatusCode.valueOf(200));
         } else {
             return ResponseEntity.status(401).body(null);
         }
     }
-    
+
 }

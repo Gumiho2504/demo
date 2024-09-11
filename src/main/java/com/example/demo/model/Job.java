@@ -1,7 +1,4 @@
-package com.example.demo;
-
-
-
+package com.example.demo.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,35 +16,33 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 
-
-
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "user"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler", "user" })
 public class Job {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String title;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL})
-    @JoinTable(
-        name = "savejob", // Join table name
-        joinColumns = @JoinColumn(name = "job_id"), // Column for Student
-        inverseJoinColumns = @JoinColumn(name = "user_id") // Column for Course
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+    @JoinTable(name = "savejob", // Join table name
+            joinColumns = @JoinColumn(name = "job_id"), // Column for Student
+            inverseJoinColumns = @JoinColumn(name = "user_id") // Column for Course
     )
     @JsonBackReference
 
     List<User> user;
 
-    public Job (){
+    public Job() {
 
     }
+
     public Job(String title) {
 
         this.title = title;
-       
+
     }
 
     public Long getId() {
@@ -66,8 +61,6 @@ public class Job {
         this.title = title;
     }
 
-
-
     public List<User> getUser() {
         return this.user;
     }
@@ -76,16 +69,16 @@ public class Job {
         this.user = user;
     }
 
-   public void addUser(User userT){
-      if(this.user == null){
-        user = new ArrayList<>();
-      }
-      user.add(userT);
-   }
-   
-   public void removeUser(User userT){
+    public void addUser(User userT) {
+        if (this.user == null) {
+            user = new ArrayList<>();
+        }
+        user.add(userT);
+    }
+
+    public void removeUser(User userT) {
         this.user.remove(userT);
-        //user.remove
-   }
+        // user.remove
+    }
 
 }

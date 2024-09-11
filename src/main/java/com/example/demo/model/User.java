@@ -1,5 +1,4 @@
-package com.example.demo;
-
+package com.example.demo.model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,52 +16,49 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 
 import java.util.Objects;
 
-
-
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class User {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private String email;
     private String password;
-    //private String about;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "profile_id")
+    private Profile profile;
     private LocalDateTime createdAt;
-
 
     public User() {
         this.createdAt = LocalDateTime.now();
     }
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL})
-    @JoinTable(
-        name = "savejob", // Join table name
-        joinColumns = @JoinColumn(name = "user_id"), // Column for Student
-        inverseJoinColumns = @JoinColumn(name = "job_id") // Column for Course
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+    @JoinTable(name = "savejob", // Join table name
+            joinColumns = @JoinColumn(name = "user_id"), // Column for Student
+            inverseJoinColumns = @JoinColumn(name = "job_id") // Column for Course
     )
     @JsonManagedReference
     private List<Job> saveJobs;
 
-    public void addJob(Job job){
-        if(saveJobs == null){
+    public void addJob(Job job) {
+        if (saveJobs == null) {
             saveJobs = new ArrayList<>();
         }
         saveJobs.add(job);
-        //job.add(this);
+        // job.add(this);
     }
 
     public void removeJob(Job job) {
         this.saveJobs.remove(job);
-        //job.setUser(null);
+        // job.setUser(null);
     }
-
-
 
     public User(long id, String name, String email, String password, LocalDateTime createdAt, List<Job> saveJobs) {
         this.id = id;
@@ -71,6 +67,30 @@ public class User {
         this.password = password;
         this.createdAt = createdAt;
         this.saveJobs = saveJobs;
+    }
+
+    public User(long id, String name, String email, String password, Profile profile, LocalDateTime createdAt,
+            List<Job> saveJobs) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.profile = profile;
+        this.createdAt = createdAt;
+        this.saveJobs = saveJobs;
+    }
+
+    public Profile getProfile() {
+        return this.profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    public User profile(Profile profile) {
+        setProfile(profile);
+        return this;
     }
 
     public String getEmail() {
@@ -135,7 +155,9 @@ public class User {
             return false;
         }
         User user = (User) o;
-        return id == user.id && Objects.equals(name, user.name) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(createdAt, user.createdAt) && Objects.equals(saveJobs, user.saveJobs);
+        return id == user.id && Objects.equals(name, user.name) && Objects.equals(email, user.email)
+                && Objects.equals(password, user.password) && Objects.equals(createdAt, user.createdAt)
+                && Objects.equals(saveJobs, user.saveJobs);
     }
 
     @Override
@@ -146,16 +168,14 @@ public class User {
     @Override
     public String toString() {
         return "{" +
-            " id='" + getId() + "'" +
-            ", name='" + getName() + "'" +
-            ", email='" + getEmail() + "'" +
-            ", password='" + getPassword() + "'" +
-            ", createdAt='" + getCreatedAt() + "'" +
-            ", saveJobs='" + getSaveJobs() + "'" +
-            "}";
+                " id='" + getId() + "'" +
+                ", name='" + getName() + "'" +
+                ", email='" + getEmail() + "'" +
+                ", password='" + getPassword() + "'" +
+                ", createdAt='" + getCreatedAt() + "'" +
+                ", saveJobs='" + getSaveJobs() + "'" +
+                "}";
     }
-   
-
 
     public long getId() {
         return this.id;
@@ -180,6 +200,5 @@ public class User {
     public void setSaveJobs(List<Job> saveJobs) {
         this.saveJobs = saveJobs;
     }
-
 
 }
