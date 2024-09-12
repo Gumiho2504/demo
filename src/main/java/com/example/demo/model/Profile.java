@@ -1,12 +1,18 @@
 package com.example.demo.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,9 +24,29 @@ public class Profile {
 
     private String title;
     private String phoneNumber;
+    // add @OneToOne annotation
+    @OneToOne(mappedBy = "profile", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
+            CascadeType.REFRESH })
+    private User user;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+    @JoinTable(name = "profile_skill", // Join table name
+            joinColumns = @JoinColumn(name = "profile_id"), // Column for Student
+            inverseJoinColumns = @JoinColumn(name = "skill_id") // Column for Course
+    )
     private List<Skill> skills;
+
+    public void addSkill(Skill skill) {
+        if (skills == null) {
+            skills = new ArrayList<>();
+        } else {
+            skills.add(skill);
+        }
+    }
+
+    public void deleteSkill(Skill skill) {
+        skills.remove(skill);
+    }
 
     // constructor
 
@@ -28,10 +54,11 @@ public class Profile {
 
     }
 
-    public Profile(long id, String title, String phoneNumber, List<Skill> skills) {
+    public Profile(long id, String title, String phoneNumber, User user, List<Skill> skills) {
         this.id = id;
         this.title = title;
         this.phoneNumber = phoneNumber;
+        this.user = user;
         this.skills = skills;
     }
 
@@ -69,6 +96,14 @@ public class Profile {
         this.skills = skills;
     }
 
+    public User getUser() {
+        return this.user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     // toString
 
     @Override
@@ -77,6 +112,7 @@ public class Profile {
                 " id='" + getId() + "'" +
                 ", title='" + getTitle() + "'" +
                 ", phoneNumber='" + getPhoneNumber() + "'" +
+                ", user='" + getUser() + "'" +
                 ", skills='" + getSkills() + "'" +
                 "}";
     }

@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -10,14 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import com.example.demo.Dto.JobDto;
-import com.example.demo.Dto.ProfileDto;
 import com.example.demo.Dto.UserDto;
 import com.example.demo.Repository.JobRepository;
+import com.example.demo.Repository.ProfileRepository;
+import com.example.demo.Repository.SkillRepository;
 import com.example.demo.Repository.UserRepository;
+import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.Job;
+import com.example.demo.model.Profile;
+import com.example.demo.model.Skill;
 import com.example.demo.model.User;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -30,19 +35,25 @@ public class UserService {
     JobRepository jobRepository;
 
     @Autowired
-    ProfileDto profileDto;
+    ProfileRepository profileRepository;
+
+    @Autowired
+    SkillRepository skillRepository;
+
+    @Autowired
+    UserMapper userMapper;
 
     // @Autowired
     // private PasswordEncoder passwordEncoder;
 
     public List<UserDto> getAllUser() {
         return userRepository.findAll().stream()
-                .map(this::toUserDto).toList();
+                .map(userMapper::toUserDto).toList();
     }
 
     public Optional<UserDto> getUserById(long id) {
         Optional<User> user = userRepository.findById(id);
-        return user.map(this::toUserDto);
+        return user.map(userMapper::toUserDto);
     }
 
     @Transactional
@@ -51,7 +62,7 @@ public class UserService {
         user.setName(userDto.getName());
         user.setPassword(userDto.getPassword());
         user.setEmail(userDto.getEmail());
-        user.setCreatedAt(userDto.getCreatedAt());
+        user.setCreatedAt(LocalDateTime.now());
         if (user.getSaveJobs() != null) {
             List<Job> jobs = userDto.getSaveJobs().stream().map(jobDto -> {
                 Job job = new Job();
@@ -64,6 +75,52 @@ public class UserService {
         }
         return userRepository.save(user);
     }
+
+    @Transactional
+    public void deleteUser(long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Optional<User> updateUser(Long userId, UserDto userDto) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setName(userDto.getName());
+            user.setEmail(userDto.getEmail());
+
+            userRepository.save(user);
+        }
+        return userOptional;
+    }
+
+    @Transactional
+    public User registerUser(String name, String email, String password) {
+        User newUser = new User();
+        newUser.setName(name);
+        newUser.setPassword(password);
+        newUser.setEmail(email);
+        newUser.setSaveJobs(null);
+        return userRepository.save(newUser);
+    }
+
+    @Transactional
+    public UserDto loginUser(String email, String password) {
+        User tempUser = userRepository.findUserByEmail(email);
+        UserDto userDto = new UserDto();
+        userDto = userMapper.toUserDto(tempUser);
+        // System.out.println(tempUser.getPassword() + tempUser.getName());
+        if (tempUser != null && tempUser.getPassword().matches(password)) {
+            System.out.println("fond!");
+            return userDto;
+        }
+        /// System.out.println("not fond!");
+        // System.out.println(tempUser.getPassword() + tempUser.getName());
+        return null;
+
+    }
+
+    // user save job
 
     @Transactional
     public Optional<User> addSaveJobsToUser(long userId, long jobId) {
@@ -88,7 +145,7 @@ public class UserService {
             Job job = jobOptional.get();
             user.removeJob(job);
 
-            user.getSaveJobs().forEach(j -> System.out.println(j.getTitle()));
+            // user.getSaveJobs().forEach(j -> System.out.println(j.getTitle()));
 
             userRepository.save(user);
             jobRepository.save(job);
@@ -96,86 +153,62 @@ public class UserService {
         return userOptional;
     }
 
+    // user at Profile
+
     @Transactional
-    public void deleteUser(long id) {
-        userRepository.deleteById(id);
+    public User addProfileToUser(long id, Profile profile) {
+        // Fetch user by id
+        Optional<User> userOptional = userRepository.findById(id);
+        if (!userOptional.isPresent()) {
+            throw new EntityNotFoundException("User not found with id: " + id); // Handle user not found
+        }
+
+        User user = userOptional.get();
+
+        // Set the profile for the user
+        profile = profileRepository.save(profile); // Save the profile first
+        user.setProfile(profile); // Associate the profile with the user
+
+        // Save the updated user with the profile
+        userRepository.save(user);
+
+        return user;
+    }
+
+    // user at skill
+
+    @Transactional
+    public Optional<User> addSkillToUser(Long userId, Long skillId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<Skill> skillOptional = skillRepository.findById(skillId);
+        // System.out.println("find");
+        if (userOptional.isPresent() && skillOptional.isPresent()) {
+            User user = userOptional.get();
+            Skill skill = skillOptional.get();
+            user.getProfile().addSkill(skill);
+
+            userRepository.save(user);
+            skillRepository.save(skill);
+            // System.out.println(skill.getTitle());
+            // System.out.println(user);
+            // return userOptional;
+        }
+
+        return userOptional;
     }
 
     @Transactional
-    public Optional<User> updateUser(Long userId, UserDto userDto) {
+    public Optional<User> deleteSkillFromUser(Long userId, Long skillId) {
         Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
+        Optional<Skill> skillOptional = skillRepository.findById(skillId);
+        if (userOptional.isPresent() && skillOptional.isPresent()) {
             User user = userOptional.get();
-            user.setName(userDto.getName());
-
-            // if(userDto.getSaveJob() != null){
-            // List<Job> jobs = userDto.getSaveJob().stream()
-            // .map(jobDto -> {
-            // Job job = new Job();
-            // job.setId(jobDto.getId());
-            // job.setTitle(jobDto.getTitle());
-            // return job;
-            // }).collect(Collectors.toList());
-            // user.setSaveJobs(jobs);
-            // }
-
+            Skill skill = skillOptional.get();
+            user.getProfile().deleteSkill(skill);
             userRepository.save(user);
+            skillRepository.save(skill);
         }
         return userOptional;
     }
 
-    public UserDto toUserDto(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setName(user.getName());
-        userDto.setEmail(user.getEmail());
-        userDto.setPassword(user.getPassword());
-        userDto.createdAt(user.getCreatedAt());
-        if (user.getSaveJobs() == null) {
-            user.setSaveJobs(new ArrayList<>());
-        } else {
-            userDto.setSaveJobs(user.getSaveJobs().stream()
-                    .map(job -> {
-                        JobDto jobDto = new JobDto();
-                        jobDto.setId(job.getId());
-                        jobDto.setTitle(job.getTitle());
-                        return jobDto;
-                    }).collect(Collectors.toList()));
-        }
-        if (user.getProfile() == null) {
-            userDto.setProfile(null);
-        } else {
-            userDto.setProfile(profileDto.toProfileDto(user.getProfile()));
-        }
-
-        return userDto;
-    }
-
-    @Transactional
-    public User registerUser(String name, String email, String password) {
-        User newUser = new User();
-        newUser.setName(name);
-        newUser.setPassword(password);
-        newUser.setEmail(email);
-        newUser.setSaveJobs(null);
-        return userRepository.save(newUser);
-    }
-
-    @Transactional
-    public UserDto loginUser(String email, String password) {
-        User tempUser = userRepository.findUserByEmail(email);
-        UserDto userDto = new UserDto();
-        userDto = toUserDto(tempUser);
-        System.out.println(tempUser.getPassword() + tempUser.getName());
-
-        if (tempUser != null && tempUser.getPassword().matches(password)) {
-            System.out.println("fond!");
-            return userDto;
-        }
-
-        System.out.println("not fond!");
-        System.out.println(tempUser.getPassword() + tempUser.getName());
-        return null;
-
-    }
 }

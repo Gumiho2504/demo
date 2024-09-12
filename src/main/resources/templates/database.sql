@@ -1,6 +1,7 @@
 USE jobapplication;
 
 -- Drop the savejob, job, user, profile, and skill tables if they exist
+
 DROP TABLE IF EXISTS savejob;
 DROP TABLE IF EXISTS job;
 DROP TABLE IF EXISTS user;
@@ -101,6 +102,7 @@ VALUES
 (3, 5, NOW()),  -- Charlie saved Marketing Specialist
 (4, 6, NOW()),  -- David saved Sales Representative
 (5, 7, NOW());  -- Eve saved UX Researcher
+
 
 -- Insert 10 example records into the skill table linked to profiles
 INSERT INTO skill (title, profile_id) 

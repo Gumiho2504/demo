@@ -4,11 +4,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.Dto.JobDto;
 import com.example.demo.Dto.UserDto;
+import com.example.demo.mapper.UserMapper;
+import com.example.demo.model.Profile;
 import com.example.demo.model.User;
 import com.example.demo.service.JobService;
 import com.example.demo.service.UserService;
 
-import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,14 +36,11 @@ public class AppController {
     @Autowired
     UserService userService;
 
-    // @GetMapping("/")
-    // public String sayHello(){
-    // return "Hello";
-    // }
+    @Autowired
+    UserMapper userMapper;
 
     @GetMapping("/")
     public List<JobDto> getAllJob() {
-
         return jobService.getAllJobs();
     }
 
@@ -67,27 +65,6 @@ public class AppController {
 
     }
 
-    @PostMapping("/user/{userId}/savejob={jobId}")
-    public ResponseEntity<User> addJobToUser(@PathVariable Long userId, @PathVariable Long jobId) {
-        Optional<User> userOptional = userService.addSaveJobsToUser(userId, jobId);
-
-        if (userOptional.isPresent()) {
-            return new ResponseEntity<>(userOptional.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @DeleteMapping("/user/{userId}/removejob={jobId}")
-    public ResponseEntity<User> removeJobsFromUser(@PathVariable Long userId, @PathVariable Long jobId) {
-        Optional<User> userOptional = userService.removeSaveJobsFromUser(userId, jobId);
-        if (userOptional.isPresent()) {
-            return new ResponseEntity<>(userOptional.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
     @DeleteMapping("/user/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable long userId) {
         userService.deleteUser(userId);
@@ -104,6 +81,7 @@ public class AppController {
         }
 
     }
+
     // @PostMapping("/user/register")
     // public ResponseEntity<?> registerUser(@RequestBody User user) {
     // try {
@@ -123,6 +101,77 @@ public class AppController {
         } else {
             return ResponseEntity.status(401).body(null);
         }
+    }
+
+    // user and Job ;
+
+    @PostMapping("/user/{userId}/savejob={jobId}")
+    public ResponseEntity<UserDto> addJobToUser(@PathVariable Long userId, @PathVariable Long jobId) {
+        Optional<User> userOptional = userService.addSaveJobsToUser(userId, jobId);
+
+        if (userOptional.isPresent()) {
+            return new ResponseEntity<>(userMapper.toUserDto(userOptional.get()), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/user/{userId}/removejob={jobId}")
+    public ResponseEntity<UserDto> removeJobsFromUser(@PathVariable Long userId, @PathVariable Long jobId) {
+        Optional<User> userOptional = userService.removeSaveJobsFromUser(userId, jobId);
+        if (userOptional.isPresent()) {
+            return new ResponseEntity<>(userMapper.toUserDto(userOptional.get()), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // User and Profile
+    @PostMapping("/user/profile/{id}")
+    public ResponseEntity<UserDto> addProfileToUser(@PathVariable long id, @RequestBody UserDto userDto) {
+        // System.out.println("user - " + userDto);
+        User tUser = userMapper.toUser(userDto);
+
+        // Check if the profile in the DTO is null
+        Profile profile = tUser.getProfile();
+        if (profile == null) {
+            System.out.println("null");
+
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Return 400 if profile is null
+        }
+
+        // Add the profile to the user and save it
+        User updatedUser = userService.addProfileToUser(id, profile);
+
+        return new ResponseEntity<>(userMapper.toUserDto(updatedUser), HttpStatus.CREATED);
+    }
+
+    // user at skill
+
+    @PostMapping("/user/{userId}/skill/{skillId}")
+    public ResponseEntity<UserDto> addSkillToUser(@PathVariable Long userId, @PathVariable Long skillId) {
+        System.out.println("controller");
+        Optional<User> userOptional = userService.addSkillToUser(userId, skillId);
+        if (userOptional.isPresent()) {
+
+            UserDto userDto = new UserDto();
+            User user = userOptional.get();
+            userDto = userMapper.toUserDto(user);
+            return new ResponseEntity<>(userDto, HttpStatus.ACCEPTED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+    }
+
+    @DeleteMapping("/user/{userId}/skill/{skillId}")
+    public ResponseEntity<UserDto> deleteSkillFromUser(@PathVariable Long userId, @PathVariable Long skillId) {
+        Optional<User> userOptional = userService.deleteSkillFromUser(userId, skillId);
+        if (userOptional.isPresent()) {
+            UserDto userDto = userMapper.toUserDto(userOptional.get());
+            return new ResponseEntity<>(userDto, HttpStatus.ACCEPTED);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
 }

@@ -1,10 +1,16 @@
 package com.example.demo.model;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -17,16 +23,19 @@ public class Skill {
     private long id;
     private String title;
 
-    @ManyToOne()
-    @JoinColumn(name = "profile_id")
-    private Profile profile;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+    @JoinTable(name = "profile_skill", // Join table name
+            joinColumns = @JoinColumn(name = "profile_id"), // Column for Student
+            inverseJoinColumns = @JoinColumn(name = "skill_id") // Column for Course
+    )
+    private List<Profile> profile;
 
     // constructor
 
     public Skill() {
     }
 
-    public Skill(long id, String title, Profile profile) {
+    public Skill(long id, String title, List<Profile> profile) {
         this.id = id;
         this.title = title;
         this.profile = profile;
@@ -50,11 +59,11 @@ public class Skill {
         this.title = title;
     }
 
-    public Profile getProfile() {
+    public List<Profile> getProfile() {
         return this.profile;
     }
 
-    public void setProfile(Profile profile) {
+    public void setProfile(List<Profile> profile) {
         this.profile = profile;
     }
 
