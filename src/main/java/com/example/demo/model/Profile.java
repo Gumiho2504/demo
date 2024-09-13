@@ -48,6 +48,36 @@ public class Profile {
         skills.remove(skill);
     }
 
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    private List<Education> educations;
+
+    public void addEduction(Education education) {
+        if (educations == null) {
+            educations = new ArrayList<>();
+        } else {
+            educations.add(education);
+        }
+    }
+
+    public void removeEducation(Education education) {
+        educations.remove(education);
+    }
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    private List<Experience> experiences;
+
+    public void addExperience(Experience experience) {
+        if (experiences == null) {
+            experiences = new ArrayList<>();
+        } else {
+            experiences.add(experience);
+        }
+    }
+
+    public void removeExperience(Experience experience) {
+        experiences.remove(experience);
+    }
+
     // constructor
 
     public Profile() {
@@ -104,6 +134,22 @@ public class Profile {
         this.user = user;
     }
 
+    public List<Education> getEducations() {
+        return this.educations;
+    }
+
+    public void setEducations(List<Education> educations) {
+        this.educations = educations;
+    }
+
+    public List<Experience> getExperiences() {
+        return this.experiences;
+    }
+
+    public void setExperiences(List<Experience> experiences) {
+        this.experiences = experiences;
+    }
+
     // toString
 
     @Override
@@ -114,6 +160,8 @@ public class Profile {
                 ", phoneNumber='" + getPhoneNumber() + "'" +
                 ", user='" + getUser() + "'" +
                 ", skills='" + getSkills() + "'" +
+                ", educations='" + getEducations() + "'" +
+                ", experiences='" + getExperiences() + "'" +
                 "}";
     }
 

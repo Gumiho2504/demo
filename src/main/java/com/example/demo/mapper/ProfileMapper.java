@@ -1,20 +1,23 @@
 package com.example.demo.mapper;
 
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.example.demo.Dto.ProfileDto;
-import com.example.demo.Dto.SkillDto;
 import com.example.demo.model.Profile;
-import com.example.demo.model.Skill;
 
 @Component
 public class ProfileMapper {
 
     @Autowired
     SkillMapper skillMapper;
+    @Autowired
+    EducationMapper educationMapper;
+    @Autowired
+    ExperienceMapper experienceMapper;
 
     public ProfileDto toProfileDto(Profile profile) {
         ProfileDto profileDto = new ProfileDto();
@@ -22,9 +25,17 @@ public class ProfileMapper {
         profileDto.setTitle(profile.getTitle());
         profileDto.setPhoneNumber(profile.getPhoneNumber());
 
-        profileDto.setSkills(
-                profile.getSkills() == null ? null
-                        : profile.getSkills().stream().map(skillMapper::toSkillDto).collect(Collectors.toList()));
+        profileDto.setSkills(profile.getSkills() == null ? null
+                : profile.getSkills().stream().map(skillMapper::toSkillDto)
+                        .collect(Collectors.toList()));
+
+        profileDto.setEducations(profile.getEducations() == null ? null
+                : profile.getEducations().stream().map(educationMapper::toEducationDto)
+                        .collect(Collectors.toList()));
+
+        profileDto.setExperiences(profile.getExperiences() == null ? null
+                : profile.getExperiences().stream().map(experienceMapper::toExperienceDto)
+                        .collect(Collectors.toList()));
         return profileDto;
     }
 
@@ -34,10 +45,15 @@ public class ProfileMapper {
         profile.setTitle(profileDto.getTitle());
         profile.setPhoneNumber(profileDto.getPhoneNumber());
 
-        profile.setSkills(
-                profileDto.getSkills() == null ? null
-                        : profileDto.getSkills().stream().map(skillMapper::toSkill).collect(Collectors.toList()));
-
+        profile.setSkills(profileDto.getSkills() == null ? null
+                : profileDto.getSkills().stream().map(skillMapper::toSkill)
+                        .collect(Collectors.toList()));
+        profile.setEducations(profileDto.getEducations() == null ? null
+                : profileDto.getEducations().stream().map(experienceMapper::toExperience)
+                        .collect(Collectors.toList()));
+        profile.setExperiences(profile.getExperiences() == null ? null
+                : profile.getEducations().stream().map(educationMapper::toEducation)
+                        .collect(Collectors.toList()));
         return profile;
     }
 }

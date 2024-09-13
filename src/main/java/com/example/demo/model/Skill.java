@@ -25,8 +25,8 @@ public class Skill {
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
     @JoinTable(name = "profile_skill", // Join table name
-            joinColumns = @JoinColumn(name = "profile_id"), // Column for Student
-            inverseJoinColumns = @JoinColumn(name = "skill_id") // Column for Course
+            joinColumns = @JoinColumn(name = "skill_id"), // Column for Student
+            inverseJoinColumns = @JoinColumn(name = "profile_id") // Column for Course
     )
     private List<Profile> profile;
 
