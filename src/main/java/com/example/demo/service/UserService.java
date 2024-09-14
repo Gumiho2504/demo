@@ -12,11 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.Dto.UserDto;
+import com.example.demo.Repository.EducationRepository;
+import com.example.demo.Repository.ExperienceRepository;
 import com.example.demo.Repository.JobRepository;
 import com.example.demo.Repository.ProfileRepository;
 import com.example.demo.Repository.SkillRepository;
 import com.example.demo.Repository.UserRepository;
 import com.example.demo.mapper.UserMapper;
+import com.example.demo.model.Education;
+import com.example.demo.model.Experience;
 import com.example.demo.model.Job;
 import com.example.demo.model.Profile;
 import com.example.demo.model.Skill;
@@ -39,6 +43,12 @@ public class UserService {
 
     @Autowired
     SkillRepository skillRepository;
+
+    @Autowired
+    ExperienceRepository experienceRepository;
+
+    @Autowired
+    EducationRepository educationRepository;
 
     @Autowired
     UserMapper userMapper;
@@ -120,7 +130,7 @@ public class UserService {
 
     }
 
-    // user save job
+    // user save job ############################
 
     @Transactional
     public Optional<User> addSaveJobsToUser(long userId, long jobId) {
@@ -153,7 +163,7 @@ public class UserService {
         return userOptional;
     }
 
-    // user at Profile
+    // user at Profile############################
 
     @Transactional
     public User addProfileToUser(long id, Profile profile) {
@@ -175,7 +185,7 @@ public class UserService {
         return user;
     }
 
-    // user at skill
+    // user at skill############################
 
     @Transactional
     public Optional<User> addSkillToUser(Long userId, Long skillId) {
@@ -206,9 +216,38 @@ public class UserService {
             Skill skill = skillOptional.get();
             user.getProfile().deleteSkill(skill);
             userRepository.save(user);
-            skillRepository.save(skill);
+            // skillRepository.save(skill);
         }
         return userOptional;
     }
 
+    // user add experience ############################ //
+
+    @Transactional
+    public Optional<User> addExperience(Long id, Experience experience) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.getProfile().addExperience(experience);
+            experience.setProfile(user.getProfile());
+            userRepository.save(user);
+            // experienceRepository.save(experience);
+        }
+        return optionalUser;
+    }
+
+    // user add education ############################ //
+
+    @Transactional
+    public Optional<User> addEducation(Long id, Education education) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.getProfile().addEduction(education);
+            education.setProfile(user.getProfile());
+            userRepository.save(user);
+            // educationRepository.save(education);
+        }
+        return userOptional;
+    }
 }

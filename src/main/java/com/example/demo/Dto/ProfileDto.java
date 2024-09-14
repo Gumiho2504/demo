@@ -1,13 +1,9 @@
 package com.example.demo.Dto;
 
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Component;
-
 import com.example.demo.model.Profile;
-import com.example.demo.model.Skill;
 
 @Component
 public class ProfileDto {
@@ -15,6 +11,8 @@ public class ProfileDto {
     private String title;
     private String phoneNumber;
     private List<SkillDto> skills;
+    private List<EducationDto> educations;
+    private List<ExperienceDto> experiences;
 
     public ProfileDto toProfileDto(Profile profile) {
         ProfileDto profileDto = new ProfileDto();
@@ -39,11 +37,14 @@ public class ProfileDto {
     public ProfileDto() {
     }
 
-    public ProfileDto(long id, String title, String phoneNumber, List<SkillDto> skill) {
+    public ProfileDto(long id, String title, String phoneNumber, List<SkillDto> skills, List<EducationDto> educations,
+            List<ExperienceDto> experiences) {
         this.id = id;
         this.title = title;
         this.phoneNumber = phoneNumber;
-        this.skills = skill;
+        this.skills = skills;
+        this.educations = educations;
+        this.experiences = experiences;
     }
 
     // getter setter
@@ -80,6 +81,22 @@ public class ProfileDto {
         this.skills = skill;
     }
 
+    public List<EducationDto> getEducations() {
+        return this.educations;
+    }
+
+    public void setEducations(List<EducationDto> educations) {
+        this.educations = educations;
+    }
+
+    public List<ExperienceDto> getExperiences() {
+        return this.experiences;
+    }
+
+    public void setExperiences(List<ExperienceDto> experiences) {
+        this.experiences = experiences;
+    }
+
     // toString()
 
     @Override
@@ -88,7 +105,9 @@ public class ProfileDto {
                 " id='" + getId() + "'" +
                 ", title='" + getTitle() + "'" +
                 ", phoneNumber='" + getPhoneNumber() + "'" +
-                ", skill='" + getSkills() + "'" +
+                ", skills='" + getSkills() + "'" +
+                ", educations='" + getEducations() + "'" +
+                ", experiences='" + getExperiences() + "'" +
                 "}";
     }
 

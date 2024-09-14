@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import com.example.demo.model.Profile;
-
 public class UserDto {
     private long id;
     private String name;

@@ -2,8 +2,12 @@ package com.example.demo;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.Dto.EducationDto;
+import com.example.demo.Dto.ExperienceDto;
 import com.example.demo.Dto.JobDto;
 import com.example.demo.Dto.UserDto;
+import com.example.demo.mapper.EducationMapper;
+import com.example.demo.mapper.ExperienceMapper;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.Profile;
 import com.example.demo.model.User;
@@ -38,6 +42,12 @@ public class AppController {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    ExperienceMapper experienceMapper;
+
+    @Autowired
+    EducationMapper educationMapper;
 
     @GetMapping("/")
     public List<JobDto> getAllJob() {
@@ -103,7 +113,7 @@ public class AppController {
         }
     }
 
-    // user and Job ;
+    // user and Job ############################ //
 
     @PostMapping("/user/{userId}/savejob={jobId}")
     public ResponseEntity<UserDto> addJobToUser(@PathVariable Long userId, @PathVariable Long jobId) {
@@ -126,7 +136,8 @@ public class AppController {
         }
     }
 
-    // User and Profile
+    // User and Profile############################ //
+
     @PostMapping("/user/profile/{id}")
     public ResponseEntity<UserDto> addProfileToUser(@PathVariable long id, @RequestBody UserDto userDto) {
         // System.out.println("user - " + userDto);
@@ -146,7 +157,7 @@ public class AppController {
         return new ResponseEntity<>(userMapper.toUserDto(updatedUser), HttpStatus.CREATED);
     }
 
-    // user at skill
+    // user at skill############################ //
 
     @PostMapping("/user/{userId}/skill/{skillId}")
     public ResponseEntity<UserDto> addSkillToUser(@PathVariable Long userId, @PathVariable Long skillId) {
@@ -174,4 +185,28 @@ public class AppController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-}
+    // experience############################ //
+
+    @PostMapping("/user/{id}/experience/post")
+    private ResponseEntity<UserDto> addExperience(@PathVariable long id, @RequestBody ExperienceDto experience) {
+        Optional<User> userOptional = userService.addExperience(id, experienceMapper.toExperience(experience));
+        if (userOptional.isPresent()) {
+            UserDto userDto = userMapper.toUserDto(userOptional.get());
+            return new ResponseEntity<>(userDto, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    // education ############################ //
+
+    @PostMapping("/user/{id}/education/post")
+    private ResponseEntity<UserDto> addEducation(@PathVariable long id, @RequestBody EducationDto education) {
+        Optional<User> userOptional = userService.addEducation(id, educationMapper.toEducation(education));
+        if (userOptional.isPresent()) {
+            UserDto userDto = userMapper.toUserDto(userOptional.get());
+            return new ResponseEntity<>(userDto, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+}// end of class
