@@ -24,8 +24,12 @@ public class ExperienceService {
 
     public Optional<Experience> editExperience(Long id, Experience experience) {
         Optional<Experience> optionalExperience = findExperienceById(id);
-        Experience tempExperience = new Experience();
-        tempExperience = experience;
+        Experience tempExperience = optionalExperience.get();
+        tempExperience.setDescription(experience.getDescription());
+        tempExperience.setCompany(experience.getCompany());
+        tempExperience.setStartDate(experience.getStartDate());
+        tempExperience.setEndDate(experience.getEndDate());
+        tempExperience.setTitle(experience.getTitle());
         experienceRepository.save(tempExperience);
         return optionalExperience;
     }

@@ -5,9 +5,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.Dto.EducationDto;
 import com.example.demo.Dto.ExperienceDto;
 import com.example.demo.Dto.JobDto;
+import com.example.demo.Dto.ProfileDto;
 import com.example.demo.Dto.UserDto;
 import com.example.demo.mapper.EducationMapper;
 import com.example.demo.mapper.ExperienceMapper;
+import com.example.demo.mapper.ProfileMapper;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.model.Profile;
 import com.example.demo.model.User;
@@ -48,6 +50,9 @@ public class AppController {
 
     @Autowired
     EducationMapper educationMapper;
+
+    @Autowired
+    ProfileMapper profileMapper;
 
     @GetMapping("/")
     public List<JobDto> getAllJob() {
@@ -139,12 +144,12 @@ public class AppController {
     // User and Profile############################ //
 
     @PostMapping("/user/profile/{id}")
-    public ResponseEntity<UserDto> addProfileToUser(@PathVariable long id, @RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> addProfileToUser(@PathVariable long id, @RequestBody ProfileDto profileDto) {
         // System.out.println("user - " + userDto);
-        User tUser = userMapper.toUser(userDto);
+        // User tUser = userMapper.toUser(userDto);
 
         // Check if the profile in the DTO is null
-        Profile profile = tUser.getProfile();
+        Profile profile = profileMapper.toProfile(profileDto);
         if (profile == null) {
             System.out.println("null");
 
@@ -209,4 +214,4 @@ public class AppController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
-}// end of class
+}// end of class 

@@ -25,8 +25,17 @@ public class EducationService {
 
     public Optional<Education> editEducation(long id, Education education) {
         Optional<Education> educationOptional = findEducationById(id);
-        Education tempEducation = new Education();
-        tempEducation = education;
+        Education tempEducation = educationOptional.get();
+        // tempEducation.setId(education.getId());
+        tempEducation.setDescription(education.getDescription());
+        tempEducation.setEndDate(education.getEndDate());
+        tempEducation.setField(education.getField());
+        tempEducation.setSchool(education.getSchool());
+        tempEducation.setStartDate(education.getStartDate());
+        if (education.getProfile() == null) {
+            tempEducation.setProfile(tempEducation.getProfile());
+        }
+        //
         educationRepository.save(tempEducation);
         return educationOptional;
     }
