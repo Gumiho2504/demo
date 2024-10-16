@@ -14,21 +14,9 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>demo</name>
 	<description>Demo project for Spring Boot</description>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
-	<developers>
-		<developer/>
-	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
 	<properties>
-		<java.version>22</java.version>
+		<java.version>17</java.version>
+		<!-- Use Java 17 or 11 for compatibility -->
 	</properties>
 	<dependencies>
 		<dependency>
@@ -41,9 +29,9 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>gty
-			<optional>true</optional>
+			<artifactId>spring-boot-starter</artifactId>
+			<scope>compile</scope>
+			<!-- Change scope to compile -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
